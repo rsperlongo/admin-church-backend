@@ -29,7 +29,9 @@ import { AuthModule } from './auth/auth.module';
         autoLoadEntities: true,
       }),
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/authentication'),
+    MongooseModule.forRoot('mongodb://localhost:27017/nestjs', {
+      connectionName: 'auth',
+    }),
     UsersModule,
     AuthModule,
   ],
