@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,8 +29,9 @@ import { UsersModule } from './users/users.module';
         autoLoadEntities: true,
       }),
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/auth'),
+    MongooseModule.forRoot('mongodb://localhost:27017/authentication'),
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
