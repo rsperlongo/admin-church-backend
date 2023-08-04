@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { async } from 'rxjs';
 
 @Module({
   imports: [
@@ -13,6 +14,18 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
       ignoreEnvFile: false,
       envFilePath: ['.env', '.env.development', '.env.production'],
+    }),
+    // MongooseModule.forRoot(
+    //   'mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@${MONGO_HOST}/${MONGO_INITDB_DATABASE}',
+    // ),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_HOST'),
+        user: configService.get('MONGO_INITDB_ROOT_USERNAME'),
+        pass: configService.get('MONGO_INITDB_ROOT_PASSWORD'),
+      }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,9 +41,6 @@ import { AuthModule } from './auth/auth.module';
         synchronize: false,
         autoLoadEntities: true,
       }),
-    }),
-    MongooseModule.forRoot('mongodb://localhost:27017/nestjs', {
-      connectionName: 'auth',
     }),
     UsersModule,
     AuthModule,
