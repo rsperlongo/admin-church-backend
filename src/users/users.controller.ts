@@ -1,13 +1,13 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { User } from 'src/@core/infra/schema/user.schema';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 
-@Controller('auth')
+@Controller('api')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('/signup')
+  @Post('auth/signup')
   async createUser(
     @Body('password') password: string,
     @Body('username') username: string,
@@ -16,5 +16,10 @@ export class UsersController {
     const hashedPassword = await bcrypt.hash(password, saltOrRounds);
     const result = await this.usersService.createUser(username, hashedPassword);
     return result;
+  }
+
+  @Get('/users')
+  async getUsers(query: object) {
+    return await this.usersService.getAll(query);
   }
 }

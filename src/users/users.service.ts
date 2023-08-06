@@ -1,5 +1,5 @@
 import { User } from './../@core/infra/schema/user.schema';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -16,5 +16,15 @@ export class UsersService {
 
   async getUser(query: object): Promise<User> {
     return this.userModel.findOne(query);
+  }
+
+  async getAll(query: object) {
+    const getUsers = this.userModel.find(query);
+
+    if (!getUsers) {
+      throw new NotFoundException('User not found');
+    }
+
+    return getUsers;
   }
 }
