@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import Joi from 'joi';
 
 @Module({
   imports: [
@@ -14,18 +13,13 @@ import Joi from 'joi';
       isGlobal: true,
       ignoreEnvFile: false,
       envFilePath: ['.env', '.env.development', '.env.production'],
-      validationSchema: Joi.object({
-        MONGO_INITDB_ROOT_USERNAME: Joi.string().required(),
-        MONGO_INITDB_ROOT_PASSWORD: Joi.string().required(),
-        MONGO_DATABASE: Joi.string().required(),
-        MONGO_HOST: Joi.string().required(),
-      }),
     }),
     MongooseModule.forRootAsync({
-      useFactory: () => ({
-        // uri: `mongodb://${username}:${password}@${host}`,
-        uri: `mongodb://localhost:27017/nest`,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
       }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
