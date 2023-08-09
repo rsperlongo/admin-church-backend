@@ -30,7 +30,7 @@ export class UsersController {
     return await this.usersService.getAll(query);
   }
 
-  @Delete('/:id')
+  @Delete(':id')
   async deleteUser(@Param('id') id: string): Promise<User> {
     return this.usersService.deleteUser(id);
   }
