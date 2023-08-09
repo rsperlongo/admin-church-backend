@@ -31,12 +31,12 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async deleteUser(@Param('id') id: string): Promise<User> {
+  async deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
   }
 
-  @Get('/user')
-  async getOneUser(query: object) {
-    return this.usersService.getUser(query);
+  @Get(':id')
+  async getOneUser(@Param('id') id: string) {
+    return this.usersService.getUserById(id);
   }
 }

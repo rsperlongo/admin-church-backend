@@ -35,8 +35,8 @@ export class UsersService {
     return getUsers;
   }
 
-  async getUserById(id: string): Promise<User> {
-    const user = this.userModel.findById(id);
+  async getUserById(id: string) {
+    const user = this.userModel.findById(id).exec();
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -44,7 +44,7 @@ export class UsersService {
     return user;
   }
 
-  async deleteUser(id: string): Promise<User> {
-    return this.userModel.findByIdAndRemove(id).exec();
+  async deleteUser(id: string) {
+    return this.userModel.deleteOne({ _id: id }).exec();
   }
 }
