@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/@core/infra/schema/user.schema';
 import { UsersModule } from 'src/users/users.module';
 import { UsersService } from 'src/users/users.service';
-import { localStrategy } from './local.auth';
+import { LocalStrategy } from './local.auth';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -19,7 +19,7 @@ import { AuthController } from './auth.controller';
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
-  providers: [AuthService, UsersService, localStrategy],
+  providers: [AuthService, UsersService, LocalStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
