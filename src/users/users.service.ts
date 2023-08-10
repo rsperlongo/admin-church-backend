@@ -22,7 +22,7 @@ export class UsersService {
   }
 
   async getUser(query: object) {
-    return this.userModel.findById(query);
+    return this.userModel.findById(query).exec();
   }
 
   async getAll(query: object) {
