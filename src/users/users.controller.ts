@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { User } from 'src/@core/infra/schema/user.schema';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import UserEntity from 'src/@core/domain/entities/users.entity';
 
 @Controller('api')
 export class UsersController {
@@ -11,25 +11,24 @@ export class UsersController {
   async createUser(
     @Body('password') password: string,
     @Body('username') username: string,
-  ): Promise<User> {
+    @Body('firstName') firstName: string,
+    @Body('lastName') lastName: string,
+    @Body('id') id: string,
+  ): Promise<UserEntity> {
     const saltOrRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltOrRounds);
-    const result = await this.usersService.createUser(username, hashedPassword);
+    const result = await this.usersService.createUser(
+      username,
+      hashedPassword,
+      firstName,
+      lastName,
+      id,
+    );
     return result;
   }
 
   @Get('/users')
-  async getUsers(query: object) {
-    return await this.usersService.getAll(query);
+  async getUsers() {
+    return await this.usersService.getAll();
   }
-
-  // @Delete(':id')
-  // async delete(@Param('id') id: string) {
-  //   return this.usersService.deleteUser(id);
-  // }
-
-  // @Get(':id')
-  // async getOneUser(@Param('id') id: string) {
-  //   return this.usersService.getUserById(id);
-  // }
 }
