@@ -2,8 +2,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 class UserEntity {
-  @PrimaryGeneratedColumn('uuid')
-  public id: string;
+  @PrimaryGeneratedColumn()
+  public id?: string;
 
   @Column({ unique: true })
   public username: string;
