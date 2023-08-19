@@ -5,10 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import UserEntity from 'src/@core/domain/entities/users.entity';
 
 @Module({
-  imports: [
-    //  MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    TypeOrmModule.forFeature([UserEntity]),
-  ],
+  imports: [TypeOrmModule.forFeature([UserEntity])],
   providers: [UsersService],
   controllers: [UsersController],
 })

@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { UpdateUsersDto } from './../@core/domain/dto/update-user.dto';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersDto } from 'src/@core/domain/dto/Users.dto';
 import { LoginUserDto } from 'src/@core/domain/dto/user-login.dto';
@@ -64,5 +70,26 @@ export class UsersService {
 
   async findAll() {
     return this.usersRepository.find();
+  }
+
+  async update(id: string, updateUsers: UpdateUsersDto) {
+    const user = await this.usersRepository.preload({
+      id,
+      ...updateUsers,
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+    return this.usersRepository.save(user);
+  }
+
+  async remove(id: string) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+    return this.usersRepository.remove(user);
   }
 }

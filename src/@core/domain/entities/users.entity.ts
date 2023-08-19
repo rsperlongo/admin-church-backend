@@ -8,7 +8,7 @@ class UserEntity {
   @Column({ unique: true })
   public username: string;
 
-  @Column()
+  @Column({ unique: true, nullable: true })
   public password: string;
 
   @Column()
