@@ -1,13 +1,11 @@
-import { MongooseModule } from '@nestjs/mongoose';
+import { UsersService } from 'src/users/users.service';
 import { Module } from '@nestjs/common';
-import { User, UserSchema } from 'src/@core/infra/schema/user.schema';
-import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import UserEntity from 'src/@core/domain/entities/users.entity';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-  ],
+  imports: [TypeOrmModule.forFeature([UserEntity])],
   providers: [UsersService],
   controllers: [UsersController],
 })

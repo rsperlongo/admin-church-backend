@@ -1,50 +1,95 @@
-import { User } from './../@core/infra/schema/user.schema';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { UpdateUsersDto } from './../@core/domain/dto/update-user.dto';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UsersDto } from 'src/@core/domain/dto/Users.dto';
+import { LoginUserDto } from 'src/@core/domain/dto/user-login.dto';
+import UserEntity from 'src/@core/domain/entities/users.entity';
+import { toUserDto } from 'src/shared/mapper';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
+  ) {}
 
-  async createUser(
-    username: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-  ): Promise<User> {
-    return this.userModel.create({
-      username,
-      password,
-      firstName,
-      lastName,
-    });
+  async create(userData: UsersDto) {
+    const newUser = await this.usersRepository.create(userData);
+    await this.usersRepository.save(newUser);
+    return newUser;
   }
 
-  async getUser(query: object) {
-    return this.userModel.findById(query).exec();
-  }
-
-  async getAll(query: object) {
-    const getUsers = this.userModel.find(query);
-
-    if (!getUsers) {
-      throw new NotFoundException('User not found');
+  async getById(id: string) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (user) {
+      return user;
     }
-
-    return getUsers;
+    throw new HttpException(
+      'User with this id does not exist',
+      HttpStatus.NOT_FOUND,
+    );
   }
 
-  async getUserById(id: string) {
-    const user = this.userModel.findById(id).exec();
+  async getByEmail(username: string) {
+    const user = await this.usersRepository.findOne({ where: { username } });
+    if (user) {
+      return user;
+    }
+    throw new HttpException(
+      'User with this email does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+  }
+
+  async findByLogin({ username, password }: LoginUserDto): Promise<UsersDto> {
+    const user = await this.usersRepository.findOne({
+      where: { username },
+    });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
-    return user;
+
+    // compare passwords
+    if (user?.password !== password) {
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    }
+
+    return toUserDto(user);
   }
 
-  async deleteUser(id: string) {
-    return this.userModel.deleteOne({ _id: id }).exec();
+  async findByPayload({ username }: any) {
+    return await this.usersRepository.findOne({ where: { username } });
+  }
+
+  async findAll() {
+    return this.usersRepository.find();
+  }
+
+  async update(id: string, updateUsers: UpdateUsersDto) {
+    const user = await this.usersRepository.preload({
+      id,
+      ...updateUsers,
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+    return this.usersRepository.save(user);
+  }
+
+  async remove(id: string) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+    return this.usersRepository.remove(user);
   }
 }
