@@ -1,9 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
 
-export class RegisterDto {
+export class AuthLoginUserDto  {
   @IsNotEmpty()
   @IsEmail()
-  username: string;
+  email: string;
 
   /* Minimum eight characters, at least one uppercase letter, one lowercase letter, one number, and one special character */
 
@@ -15,4 +15,4 @@ export class RegisterDto {
    password: string;
   }  
 
-export default RegisterDto;
+export default AuthLoginUserDto ;

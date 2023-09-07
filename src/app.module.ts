@@ -22,7 +22,7 @@ import { AuthModule } from './auth/auth.module';
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
         entities: ['dist/**/*.entity.js'], // 'dist/**/*.entity.{ts,js}'
-        synchronize: true,
+        synchronize: false,
         autoLoadEntities: true,
       }),
     }),

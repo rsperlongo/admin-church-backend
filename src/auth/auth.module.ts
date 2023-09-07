@@ -5,9 +5,11 @@ import { UsersService } from 'src/users/users.service';
 import { LocalStrategy } from './local.auth';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import UserEntity from 'src/@core/domain/entities/users.entity';
+import { AwsCognitoService } from './aws-cognito.service';
+import { AWSAuthController } from './aws-auth.controller';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -20,8 +22,8 @@ import UserEntity from 'src/@core/domain/entities/users.entity';
     //  MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     TypeOrmModule.forFeature([UserEntity]),
   ],
-  providers: [AuthService, UsersService, LocalStrategy],
-  controllers: [AuthController],
+  providers: [AuthService, AwsCognitoService, UsersService, LocalStrategy],
+  controllers: [AuthController, AWSAuthController],
   exports: [PassportModule, JwtModule],
 })
 export class AuthModule {}
