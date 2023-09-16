@@ -17,7 +17,6 @@ import UserEntity from 'src/@core/domain/entities/users.entity';
       secret: 'secretKey',
       signOptions: { expiresIn: '60s' },
     }),
-    //  MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     TypeOrmModule.forFeature([UserEntity]),
   ],
   providers: [AuthService, UsersService, LocalStrategy],

@@ -12,10 +12,7 @@ class UserEntity {
   public password: string;
 
   @Column()
-  public firstName: string;
-
-  @Column()
-  public lastName: string;
+  public name: string;
 }
 
 export default UserEntity;

@@ -5,7 +5,10 @@ import { UsersDto } from '../@core/domain/dto/Users.dto';
 import { RegistrationStatus } from './interfaces/registration-status.interface';
 import { LoginStatus } from './interfaces/login-status.interface';
 import { JwtPayload } from './interfaces/payload-interfaces';
-import { LoginUserDto } from '../@core/domain/dto/user-login.dto';
+import { LoginUserDto } from '../@core/domain/dto/User-login.dto';
+import RegisterDto from 'src/@core/domain/dto/Register.dto';
+
+import * as bycript from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -14,13 +17,21 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async register(userDto: UsersDto): Promise<RegistrationStatus> {
+  public async register(registrationData: RegisterDto) {
+    const hashedPassword = await bycript.hash(registrationData.password, 10);
+    
     let status: RegistrationStatus = {
       success: true,
       message: 'user registered',
     };
     try {
-      await this.usersService.create(userDto);
+      const createdUser = await this.usersService.create({
+        ...registrationData,
+        password: hashedPassword,
+        name: ''
+      });
+      createdUser.password = undefined;
+      return createdUser
     } catch (error) {
       status = {
         success: false,
@@ -47,7 +58,7 @@ export class AuthService {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
     return user;
-  }
+  }  
 
   private _createToken({ username }: UsersDto): any {
     const expiresIn = process.env.EXPIRESIN;
@@ -63,4 +74,26 @@ export class AuthService {
       accessToken,
     };
   }
+
+  public async getAuthenticatedUser(email: string, plainTextPassword: string) {
+    try {
+      const user = await this.usersService.getByEmail(email);
+      await this.verifyPassword(plainTextPassword, user.password);
+      return user;
+    } catch (error) {
+      throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  private async verifyPassword(plainTextPassword: string, hashedPassword: string) {
+    const isPasswordMatching = await bycript.compare(
+      plainTextPassword,
+      hashedPassword
+    );
+    if (!isPasswordMatching) {
+      throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
+    }
+  }
 }
+
+

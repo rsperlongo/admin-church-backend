@@ -13,8 +13,11 @@ export class UsersDto {
   password: string;
 
   @IsNotEmpty()
-  firstName: string;
+  name: string;
 
-  @IsNotEmpty()
-  lastName: string;
+  // @IsNotEmpty()
+  // firstName: string;
+
+  // @IsNotEmpty()
+  // lastName: string;
 }

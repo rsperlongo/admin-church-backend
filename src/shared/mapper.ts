@@ -8,8 +8,7 @@ export const toUserDto = (data: UserEntity): UsersDto => {
     id,
     username,
     password: '',
-    firstName: '',
-    lastName: '',
+    name: '',
   };
 
   return usersDto;

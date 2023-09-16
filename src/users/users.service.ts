@@ -1,4 +1,4 @@
-import { UpdateUsersDto } from './../@core/domain/dto/update-user.dto';
+import { UpdateUsersDto } from '../@core/domain/dto/Update-user.dto';
 import {
   HttpException,
   HttpStatus,
@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersDto } from 'src/@core/domain/dto/Users.dto';
-import { LoginUserDto } from 'src/@core/domain/dto/user-login.dto';
+import { LoginUserDto } from 'src/@core/domain/dto/User-login.dto';
 import UserEntity from 'src/@core/domain/entities/users.entity';
 import { toUserDto } from 'src/shared/mapper';
 import { Repository } from 'typeorm';
