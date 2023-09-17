@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersDto } from '../@core/domain/dto/Users.dto';
@@ -9,12 +10,13 @@ import { LoginUserDto } from '../@core/domain/dto/User-login.dto';
 import RegisterDto from 'src/@core/domain/dto/Register.dto';
 
 import * as bycript from 'bcrypt';
+import TokenPayload from './interfaces/tokenPayload.inteface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   public async register(registrationData: RegisterDto) {
@@ -41,7 +43,7 @@ export class AuthService {
     return status;
   }
 
-  async login(loginUserDto: LoginUserDto): Promise<LoginStatus> {
+  async login(loginUserDto: LoginUserDto): Promise<any> {
     const user = await this.usersService.findByLogin(loginUserDto);
 
     const token = this._createToken(user);
@@ -52,12 +54,16 @@ export class AuthService {
     };
   }
 
-  async validateUser(payload: JwtPayload) {
+  async validateUser(payload: JwtPayload, password: string) {
     const user = await this.usersService.findByPayload(payload);
+    const passwordValid = await bycript.compare(password, user.password)
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
-    return user;
+    if (user && passwordValid) {
+      return user;
+    }
+    return null;
   }  
 
   private _createToken({ username }: UsersDto): any {

@@ -10,8 +10,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(payload: JwtPayload) {
-    const user = await this.authService.validateUser(payload);
+  async validate(payload: JwtPayload, password: string) {
+    const user = await this.authService.validateUser(payload, password);
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }

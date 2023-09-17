@@ -31,7 +31,7 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async logIn(@Body() loginUserDto: LogInDto): Promise<LoginStatus> {
+  async logIn(@Body() loginUserDto: LogInDto): Promise<any> {
     return await this.authService.login(loginUserDto);
   }
 
