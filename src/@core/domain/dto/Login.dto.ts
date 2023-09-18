@@ -9,7 +9,4 @@ export class LogInDto {
   @IsNotEmpty()
   @MinLength(4)
   password: string;
-
-  @IsOptional()
-  name: string
 }

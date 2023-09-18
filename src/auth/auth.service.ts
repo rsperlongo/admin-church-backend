@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersDto } from '../@core/domain/dto/Users.dto';
@@ -7,10 +6,9 @@ import { RegistrationStatus } from './interfaces/registration-status.interface';
 import { LoginStatus } from './interfaces/login-status.interface';
 import { JwtPayload } from './interfaces/payload-interfaces';
 import { LoginUserDto } from '../@core/domain/dto/User-login.dto';
-import RegisterDto from 'src/@core/domain/dto/Register.dto';
 
 import * as bycript from 'bcrypt';
-import TokenPayload from './interfaces/tokenPayload.inteface';
+import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,20 +17,13 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  public async register(registrationData: RegisterDto) {
-    const hashedPassword = await bycript.hash(registrationData.password, 10);
-    
+  public async register(userDto: CreateUserDto): Promise<RegistrationStatus> {
     let status: RegistrationStatus = {
       success: true,
       message: 'user registered',
     };
     try {
-      const createdUser = await this.usersService.create({
-        ...registrationData,
-        password: hashedPassword,
-      });
-      createdUser.password = undefined;
-      return createdUser
+      await this.usersService.create(userDto);
     } catch (error) {
       status = {
         success: false,
@@ -43,8 +34,10 @@ export class AuthService {
   }
 
   async login(loginUserDto: LoginUserDto): Promise<LoginStatus> {
+    // find user in db
     const user = await this.usersService.findByLogin(loginUserDto);
 
+    // generate and sign token
     const token = this._createToken(user);
 
     return {
@@ -53,15 +46,11 @@ export class AuthService {
     };
   }
 
-  async validateUser(payload: JwtPayload, password: string) {
+  async validateUser(payload: JwtPayload) {
     const user = await this.usersService.findByPayload(payload);
     
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
-    }
-    const passwordValid = await bycript.compare(password, user.password)
-    if (user && passwordValid === true) {
-      return user;
     }
   }  
 
@@ -78,26 +67,6 @@ export class AuthService {
       expiresIn,
       accessToken,
     };
-  }
-
-  public async getAuthenticatedUser(username: string, plainTextPassword: string) {
-    try {
-      const user = await this.usersService.getByEmail(username);
-      await this.verifyPassword(plainTextPassword, user.password);
-      return user;
-    } catch (error) {
-      throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  private async verifyPassword(plainTextPassword: string, hashedPassword: string) {
-    const isPasswordMatching = await bycript.compare(
-      plainTextPassword,
-      hashedPassword
-    );
-    if (!isPasswordMatching) {
-      throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
-    }
   }
 }
 

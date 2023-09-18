@@ -11,7 +11,8 @@ import { LoginUserDto } from 'src/@core/domain/dto/User-login.dto';
 import UserEntity from 'src/@core/domain/entities/users.entity';
 import { toUserDto } from 'src/shared/mapper';
 import { Repository } from 'typeorm';
-import { LogInDto } from 'src/@core/domain/dto/Login.dto';
+import User from '../@core/domain/entities/users.entity';
+import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -20,10 +21,18 @@ export class UsersService {
     private usersRepository: Repository<UserEntity>,
   ) {}
 
-  async create(userData: UsersDto) {
+  async createUser(createUserDto: CreateUserDto) {
+    const newUser = new User();
+
+    newUser.username = createUserDto.username;
+    newUser.password = createUserDto.password;
+
+    return await this.usersRepository.save(newUser);
+  }
+
+  async create(userData: CreateUserDto) {
     const newUser = await this.usersRepository.create(userData);
-    await this.usersRepository.save(newUser);
-    return newUser;
+    return await this.usersRepository.save(newUser);
   }
 
   async getById(id: string) {

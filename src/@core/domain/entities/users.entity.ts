@@ -10,9 +10,6 @@ class UserEntity {
 
   @Column({ unique: true, nullable: true })
   public password: string;
-
-  @Column()
-  public name: string;
 }
 
 export default UserEntity;

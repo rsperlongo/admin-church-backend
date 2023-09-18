@@ -4,17 +4,16 @@ import {
   UseGuards,
   HttpCode,
   Body,
+  Res,
   HttpException,
   HttpStatus,
-  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RegistrationStatus } from './interfaces/registration-status.interface';
-import { UsersDto } from 'src/@core/domain/dto/Users.dto';
 import { LogInDto } from 'src/@core/domain/dto/Login.dto';
 import { LoginStatus } from './interfaces/login-status.interface';
-import RegisterDto from 'src/@core/domain/dto/Register.dto';
+import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
+import { RegistrationStatus } from './interfaces/registration-status.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -22,10 +21,16 @@ export class AuthController {
 
   @Post('register')
   public async register(
-    @Body() registrationData: RegisterDto,
-  ) {
-    const user = await this.authService.register(registrationData);
-    return user;
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<RegistrationStatus> {
+    const result: RegistrationStatus =
+      await this.authService.register(createUserDto);
+
+    if (!result.success) {
+      throw new HttpException(result.message, HttpStatus.BAD_REQUEST);
+    }
+
+    return result;
   }
 
   @HttpCode(200)
