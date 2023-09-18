@@ -9,14 +9,9 @@ export class UsersDto {
   username: string;
 
   @IsNotEmpty()
+  @MinLength(4)
   password: string;
 
   @IsOptional()
   name: string;
-
-  // @IsNotEmpty()
-  // firstName: string;
-
-  // @IsNotEmpty()
-  // lastName: string;
 }

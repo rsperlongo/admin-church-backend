@@ -11,6 +11,7 @@ import { LoginUserDto } from 'src/@core/domain/dto/User-login.dto';
 import UserEntity from 'src/@core/domain/entities/users.entity';
 import { toUserDto } from 'src/shared/mapper';
 import { Repository } from 'typeorm';
+import { LogInDto } from 'src/@core/domain/dto/Login.dto';
 
 @Injectable()
 export class UsersService {
@@ -64,7 +65,7 @@ export class UsersService {
     return toUserDto(user);
   }
 
-  async findByPayload({ username }: any) {
+  async findByPayload({ username }): Promise<UsersDto> {
     return await this.usersRepository.findOne({ where: { username } });
   }
 

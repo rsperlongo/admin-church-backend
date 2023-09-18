@@ -30,7 +30,6 @@ export class AuthService {
       const createdUser = await this.usersService.create({
         ...registrationData,
         password: hashedPassword,
-        name: ''
       });
       createdUser.password = undefined;
       return createdUser
@@ -43,7 +42,7 @@ export class AuthService {
     return status;
   }
 
-  async login(loginUserDto: LoginUserDto): Promise<any> {
+  async login(loginUserDto: LoginUserDto): Promise<LoginStatus> {
     const user = await this.usersService.findByLogin(loginUserDto);
 
     const token = this._createToken(user);
@@ -56,14 +55,14 @@ export class AuthService {
 
   async validateUser(payload: JwtPayload, password: string) {
     const user = await this.usersService.findByPayload(payload);
-    const passwordValid = await bycript.compare(password, user.password)
+    
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
-    if (user && passwordValid) {
+    const passwordValid = await bycript.compare(password, user.password)
+    if (user && passwordValid === true) {
       return user;
     }
-    return null;
   }  
 
   private _createToken({ username }: UsersDto): any {
@@ -81,9 +80,9 @@ export class AuthService {
     };
   }
 
-  public async getAuthenticatedUser(email: string, plainTextPassword: string) {
+  public async getAuthenticatedUser(username: string, plainTextPassword: string) {
     try {
-      const user = await this.usersService.getByEmail(email);
+      const user = await this.usersService.getByEmail(username);
       await this.verifyPassword(plainTextPassword, user.password);
       return user;
     } catch (error) {
