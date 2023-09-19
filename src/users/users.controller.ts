@@ -6,10 +6,10 @@ import { UpdateUsersDto } from 'src/@core/domain/dto/Update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  /* @Get()
+  @Get()
   async getAll() {
     return this.usersService.findAll();
-  } */
+  } 
 
   /* @Patch('/:id')
   async updateUser(

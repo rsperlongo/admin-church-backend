@@ -76,4 +76,10 @@ export class UsersService {
   async findByPayload({ email }: any): Promise<UserDto> {
     return await this.usersRepository.findOne({ where: { email } });
   }
+
+  // USERS CRUD
+
+  async findAll() {
+    return this.usersRepository.find()
+  }
 }
