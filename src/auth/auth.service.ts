@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { UsersDto } from '../@core/domain/dto/Users.dto';
+import { UserDto } from '../@core/domain/dto/Users.dto';
 import { RegistrationStatus } from './interfaces/registration-status.interface';
 import { LoginStatus } from './interfaces/login-status.interface';
 import { JwtPayload } from './interfaces/payload-interfaces';
@@ -41,23 +41,23 @@ export class AuthService {
     const token = this._createToken(user);
 
     return {
-      username: user.username,
+      email: user.email,
       ...token,
     };
   }
 
-  async validateUser(payload: JwtPayload) {
+  async validateUser(payload: JwtPayload): Promise<UserDto> {
     const user = await this.usersService.findByPayload(payload);
-    
     if (!user) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
-  }  
+    return user;
+  }
 
-  private _createToken({ username }: UsersDto): any {
+  private _createToken({ email }: UserDto): any {
     const expiresIn = process.env.EXPIRESIN;
 
-    const user: JwtPayload = { username };
+    const user: JwtPayload = { email };
     const accessToken = this.jwtService.sign(user, {
       secret: process.env.JWT_SECRET,
       expiresIn: '60h',

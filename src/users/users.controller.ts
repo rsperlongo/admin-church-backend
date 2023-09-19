@@ -6,21 +6,21 @@ import { UpdateUsersDto } from 'src/@core/domain/dto/Update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
+  /* @Get()
   async getAll() {
     return this.usersService.findAll();
-  }
+  } */
 
-  @Patch('/:id')
+  /* @Patch('/:id')
   async updateUser(
     @Param('id') id: string,
     @Body() updateUser: UpdateUsersDto,
   ): Promise<UpdateUsersDto> {
     return await this.usersService.update(id, updateUser);
-  }
+  } */
 
-  @Delete('/:id')
+  /* @Delete('/:id')
   async removeUser(@Param('id') id: string) {
     return this.usersService.remove(id);
-  }
+  } */
 }
