@@ -18,12 +18,18 @@ export class AuthService {
   ) {}
 
   public async register(userDto: CreateUserDto): Promise<RegistrationStatus> {
+    const hashedPassword = await bycript.hash(userDto.password, 10);
+
     let status: RegistrationStatus = {
       success: true,
       message: 'user registered',
     };
     try {
-      await this.usersService.create(userDto);
+      const createdUser = await this.usersService.create({
+        ...userDto,
+        password: hashedPassword,
+      });
+      createdUser.password = undefined;
     } catch (error) {
       status = {
         success: false,
