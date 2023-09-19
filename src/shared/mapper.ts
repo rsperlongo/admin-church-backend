@@ -1,15 +1,12 @@
-import { UsersDto } from 'src/@core/domain/dto/Users.dto';
+import { UserDto } from 'src/@core/domain/dto/Users.dto';
 import UserEntity from 'src/@core/domain/entities/users.entity';
 
-export const toUserDto = (data: UserEntity): UsersDto => {
-  const { id, username } = data;
+export const toUserDto = (data: UserEntity): UserDto => {
+  const { id, email } = data;
 
-  const usersDto: UsersDto = {
+  const usersDto: UserDto = {
     id,
-    username,
-    password: '',
-    firstName: '',
-    lastName: '',
+    email,
   };
 
   return usersDto;

@@ -1,4 +1,4 @@
-import { UpdateUsersDto } from './../@core/domain/dto/update-user.dto';
+import { UpdateUsersDto } from '../@core/domain/dto/Update-user.dto';
 import {
   HttpException,
   HttpStatus,
@@ -6,23 +6,38 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersDto } from 'src/@core/domain/dto/Users.dto';
-import { LoginUserDto } from 'src/@core/domain/dto/user-login.dto';
-import UserEntity from 'src/@core/domain/entities/users.entity';
+import { UserDto } from 'src/@core/domain/dto/Users.dto';
+import { LoginUserDto } from 'src/@core/domain/dto/User-login.dto';
 import { toUserDto } from 'src/shared/mapper';
 import { Repository } from 'typeorm';
+import User from '../@core/domain/entities/users.entity';
+import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
-  async create(userData: UsersDto) {
-    const newUser = await this.usersRepository.create(userData);
-    await this.usersRepository.save(newUser);
-    return newUser;
+  async getByEmail(email: string) {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (user) {
+      return user;
+    }
+    throw new HttpException(
+      'User with this email does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+  }
+
+  async createUser(createUserDto: CreateUserDto) {
+    const newUser = new User();
+
+    newUser.email = createUserDto.email;
+    newUser.password = createUserDto.password;
+
+    return await this.usersRepository.save(newUser);
   }
 
   async getById(id: string) {
@@ -36,20 +51,14 @@ export class UsersService {
     );
   }
 
-  async getByEmail(username: string) {
-    const user = await this.usersRepository.findOne({ where: { username } });
-    if (user) {
-      return user;
-    }
-    throw new HttpException(
-      'User with this email does not exist',
-      HttpStatus.NOT_FOUND,
-    );
+  async create(userData: CreateUserDto) {
+    const newUser = await this.usersRepository.create(userData);
+    return await this.usersRepository.save(newUser);
   }
 
-  async findByLogin({ username, password }: LoginUserDto): Promise<UsersDto> {
+  async findByLogin({ email, password }: LoginUserDto): Promise<UserDto> {
     const user = await this.usersRepository.findOne({
-      where: { username },
+      where: { email },
     });
 
     if (!user) {
@@ -64,32 +73,13 @@ export class UsersService {
     return toUserDto(user);
   }
 
-  async findByPayload({ username }: any) {
-    return await this.usersRepository.findOne({ where: { username } });
+  async findByPayload({ email }: any): Promise<UserDto> {
+    return await this.usersRepository.findOne({ where: { email } });
   }
+
+  // USERS CRUD
 
   async findAll() {
-    return this.usersRepository.find();
-  }
-
-  async update(id: string, updateUsers: UpdateUsersDto) {
-    const user = await this.usersRepository.preload({
-      id,
-      ...updateUsers,
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User ${id} not found`);
-    }
-    return this.usersRepository.save(user);
-  }
-
-  async remove(id: string) {
-    const user = await this.usersRepository.findOne({ where: { id } });
-
-    if (!user) {
-      throw new NotFoundException(`User ${id} not found`);
-    }
-    return this.usersRepository.remove(user);
+    return this.usersRepository.find()
   }
 }

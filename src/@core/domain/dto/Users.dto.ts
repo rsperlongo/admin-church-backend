@@ -1,20 +1,12 @@
-import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
+import { IsNotEmpty, IsEmail } from 'class-validator';
 
-export class UsersDto {
-  @IsOptional()
-  id?: string;
+export class UserDto {
+  @IsNotEmpty()
+  id: string;
 
   @IsNotEmpty()
   @IsEmail()
-  username: string;
+  email: string;
 
-  @IsNotEmpty()
-  @MinLength(4)
-  password: string;
-
-  @IsNotEmpty()
-  firstName: string;
-
-  @IsNotEmpty()
-  lastName: string;
+  createdOn?: Date;
 }
