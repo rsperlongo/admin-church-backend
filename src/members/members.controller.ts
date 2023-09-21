@@ -1,38 +1,37 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { Controller, Post, Body, Get, Param, Patch, Delete } from "@nestjs/common";
+import { MembersService } from "./members.service";
 import { UpdateMembersDto } from "src/@core/domain/dto/updateMembers.dto";
-import { Members } from "src/@core/domain/entities/members.entity";
-import { Repository } from "typeorm";
+import { CreateMemberDTO } from "src/@core/domain/dto/createMembers.dto";
 
-@Injectable()
-export class MembersService {
-    constructor(@InjectRepository(Members)
-    private readonly membersRepository: Repository<Members>) {}
+@Controller('members')
+export class MembersController {
+    constructor(private readonly membersService: MembersService) { }
 
-    async findAll() {
-        return this.membersRepository.find();
+    @Post('create')
+    async postMembers(@Body() members: CreateMemberDTO) {
+        return this.membersService.createMember(members);
     }
 
-    async findOne(id: string): Promise<Members[]> {
-        const members = await this.membersRepository.find({ where: { id } });
-        if(!members) {
-            throw new HttpException(`Member ${id} not found`, HttpStatus.NOT_FOUND)
-        }
-        return members;
+    @Get()
+    async GetMembers() {
+        return this.membersService.findAll()
     }
 
-    async create() {
-        const members = await this.membersRepository.create();
-        return this.membersRepository.save(members)
+    @Get('/:id')
+    async getByIdMembers(@Param('id') id: string) {
+        return this.membersService.findOne(id);
     }
 
-    // async update(id: string, updateMembers: UpdateMembersDto) {
-    //     const members = await this.membersRepository.find({
-    //         where: {memberName },
-    //     });
-    //     if(!members) {
-    //         throw new HttpException(`Member ${memberName} not found`, HttpStatus.NOT_FOUND)
-    //     }
-    //     return members;
-    // }
+    @Patch('/:id')
+    async updateMember(
+        @Param('id') id: string,
+        @Body() updateMember: UpdateMembersDto,
+    ): Promise<UpdateMembersDto> {
+        return await this.membersService.update(id, updateMember);
+    }
+
+    @Delete('/:id')
+    async removeMember(@Param('id') id: string) {
+        return this.membersService.remove(id);
+    }
 }

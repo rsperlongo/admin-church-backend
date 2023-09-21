@@ -1,25 +1,30 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity('members')
 export class Members {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
-    firstname: string;
+    @Column("varchar", { length: 200 })
+    public firstname: string;
 
-    @Column()
-    address: string;
+    @Column("varchar", { length: 200 })
+    public lastname: string;
 
-    @Column()
-    city: string;
+    @Column("varchar", { length: 200 })
+    public address: string;
 
-    @Column()
-    uf: string;
+    @Column("varchar", { length: 150 })
+    public city: string;
 
-    @Column()
-    birthday: Date;
+    @Column("varchar")
+    public uf: string;
 
-    @Column()
-    Phone: number;
+    @Column("varchar", { length: 150 })
+    public birthday: string;
+
+    @Column("varchar", { length: 150 })
+    public phone: string;
 }
+
+export default Members;
