@@ -83,4 +83,15 @@ export class UsersService {
   async findAll() {
     return this.usersRepository.find()
   }
+
+  async remove(id: string) {
+    const user = await this.usersRepository.findOne({
+      where: { id }
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Product ${id} not found`);
+    }
+    return this.usersRepository.remove(user);
+  }
 }
