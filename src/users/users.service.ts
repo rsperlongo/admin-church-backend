@@ -12,6 +12,7 @@ import { toUserDto } from 'src/shared/mapper';
 import { Repository } from 'typeorm';
 import User from '../@core/domain/entities/users.entity';
 import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
+import * as bycript from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -60,16 +61,16 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { email },
     });
-
+    
+    const passwordValid = await bycript.compare(password, user.password)
     if (!user) {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
 
-    // compare passwords
-    if (user?.password !== password) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    if(user && passwordValid) {
+      return user;
     }
-
+    
     return toUserDto(user);
   }
 
