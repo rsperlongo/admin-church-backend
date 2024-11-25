@@ -53,4 +53,11 @@ export class AuthController {
       throw new NotFoundException(`No user found for email: ${email}`)
     }
   }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body() { token, password }: { token: string; password: string }
+): Promise<void> {
+    return this.authService.resetPassword(token, password);
+}
 }

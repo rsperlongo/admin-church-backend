@@ -1,4 +1,6 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { dbUsers } from 'src/constants/user';
+import { ConfigService } from '@nestjs/config';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from '../@core/domain/dto/Users.dto';
@@ -9,13 +11,22 @@ import { LoginUserDto } from '../@core/domain/dto/User-login.dto';
 
 import * as bycript from 'bcrypt';
 import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
+import { Auth, google } from 'googleapis';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class AuthService {
+  oauthClient: Auth.OAuth2Client;
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService
-  ) {}
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly emailService: EmailService
+  ) {
+    const clientID = this.configService.get('GOOGLE_CLIENT_ID');
+    const clientSecret = this.configService.get('GOOGLE_CLIENT_SECRET');
+    this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
+  }
 
   public async register(userDto: CreateUserDto): Promise<RegistrationStatus> {
     const hashedPassword = await bycript.hash(userDto.password, 10);
@@ -73,6 +84,28 @@ export class AuthService {
       expiresIn,
       accessToken,
     };
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = dbUsers.find((user) => user.email === email);
+
+    if (!user) {
+      throw new NotFoundException(`No user found for email: ${email}`);
+    }
+    await this.emailService.sendResetPasswordLink(email)
+  }
+
+  async resetPassword(token: string, password: string) {
+    const email = await this.emailService.decodeConfirmationToken(token)
+
+    const user = dbUsers.find((user => user.email === email));
+
+    if(!user) {
+      throw new NotFoundException(`No user found for email: ${email}`)
+    }
+
+    user.password = password;
+    delete user.resetToken;
   }
 }
 
