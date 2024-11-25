@@ -66,7 +66,7 @@ export class UsersService {
     }
 
     // compare passwords
-    if (user?.password !== password) {
+    if (user.password !== password) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
