@@ -10,6 +10,12 @@ export class UserEntity {
 
   @Column({ unique: true, nullable: true })
   public password: string;
+
+  @Column({ nullable: true })
+  resetToken: string;
+
+  @Column({ nullable: true, type: 'timestamptz' })
+  resetTokenExpiry: Date;
 }
 
 export default UserEntity;
