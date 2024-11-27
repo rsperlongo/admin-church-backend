@@ -12,6 +12,9 @@ import { toUserDto } from 'src/shared/mapper';
 import { Repository } from 'typeorm';
 import User from '../@core/domain/entities/users.entity';
 import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
+import * as bycript from 'bcrypt';
+import * as crypto from 'crypto';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class UsersService {
@@ -61,13 +64,13 @@ export class UsersService {
       where: { email },
     });
 
+    const passwordValid = await bycript.compare(password, user.password);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
 
-    // compare passwords
-    if (user?.password !== password) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    if (user && passwordValid) {
+      return user;
     }
 
     return toUserDto(user);
@@ -77,9 +80,65 @@ export class UsersService {
     return await this.usersRepository.findOne({ where: { email } });
   }
 
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Generate a token
+    const token = crypto.randomBytes(32).toString('hex');
+    user.resetToken = token;
+    user.resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+    await this.usersRepository.save(user);
+
+    // Send email (you'll need to set up a mailer service)
+    await this.sendResetEmail(user.email, token);
+  }
+
+  async sendResetEmail(email: string, token: string): Promise<void> {
+    const  transporter = nodemailer.createTransport({
+      auth: {
+        user: 'ricardo.sperlongo@gmail.com',
+        pass: 'Lme363nc@23+'
+      }
+    })
+    console.log(
+      `Reset link: http://your-frontend-url/reset-password?token=${token}`,
+    );
+
+    const resetUrl = `http://your-frontend-url/reset-password?token=${token}`;
+
+    await transporter.sendMail({
+      to: email,
+      subject: 'Password reset',
+      text: `Click the link to reset your password ${resetUrl}`,
+      html: `<a href="${resetUrl}">Reset your password</a>`,
+    })
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const user = await this.usersRepository.findOne({
+      where: { resetToken: token },
+    });
+    if (!user || user.resetTokenExpiry < new Date()) {
+      throw new Error('Invalid or expired token');
+    }
+
+    // Update password
+    const hashedPassword = await bycript.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+
+    await this.usersRepository.save(user);
+  }
+
+  
   // USERS CRUD
 
   async findAll() {
-    return this.usersRepository.find()
+    return this.usersRepository.find();
   }
 }
