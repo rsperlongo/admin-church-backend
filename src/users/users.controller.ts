@@ -25,13 +25,13 @@ export class UsersController {
     return { message: 'Password has been reset successfully' };
   }
 
-  /* @Patch('/:id')
+   @Patch('/:id')
   async updateUser(
     @Param('id') id: string,
     @Body() updateUser: UpdateUsersDto,
   ): Promise<UpdateUsersDto> {
     return await this.usersService.update(id, updateUser);
-  } */
+  } 
 
   @Delete('/:id')
   async removeUser(@Param('id') id: string) {

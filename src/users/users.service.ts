@@ -13,11 +13,8 @@ import { Repository } from 'typeorm';
 import User from '../@core/domain/entities/users.entity';
 import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
 import * as bycript from 'bcrypt';
-<<<<<<< HEAD
-=======
 import * as crypto from 'crypto';
 import * as nodemailer from 'nodemailer';
->>>>>>> dfc87d1c9bf1effec70d822aa303a7a8a981d8fd
 
 @Injectable()
 export class UsersService {
@@ -66,22 +63,13 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { email },
     });
-<<<<<<< HEAD
     
     const passwordValid = await bycript.compare(password, user.password)
-=======
-
-    const passwordValid = await bycript.compare(password, user.password);
->>>>>>> dfc87d1c9bf1effec70d822aa303a7a8a981d8fd
     if (!user) {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
 
-<<<<<<< HEAD
     if(user && passwordValid) {
-=======
-    if (user && passwordValid) {
->>>>>>> dfc87d1c9bf1effec70d822aa303a7a8a981d8fd
       return user;
     }
     
@@ -152,6 +140,18 @@ export class UsersService {
 
   async findAll() {
     return this.usersRepository.find();
+  }
+
+  async update(id: string, updateUser: UpdateUsersDto) {
+    const user = await this.usersRepository.preload({
+       id,
+       ...updateUser
+    });
+
+    if(!user) {
+      throw new NotFoundException(`Member ${id} not found`)
+    }
+    return user
   }
 
   async remove(id: string) {
