@@ -11,6 +11,7 @@ import { LoginUserDto } from '../@core/domain/dto/User-login.dto';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
 import { Auth, google } from 'googleapis';
+import { Role } from 'src/@core/domain/enum/role.enum';
 // import { EmailService } from 'src/email/email.service';
 
 @Injectable()
@@ -19,8 +20,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-    //private readonly emailService: EmailService
+    private readonly configService: ConfigService
   ) {
     const clientID = this.configService.get('GOOGLE_CLIENT_ID');
     const clientSecret = this.configService.get('GOOGLE_CLIENT_SECRET');
@@ -84,34 +84,6 @@ export class AuthService {
       accessToken,
     };
   }
-
-
-  // async forgotPassword(email: string): Promise<void> {
-  //   const user = dbUsers.find((user) => user.email === email);
-
-  //   if (!user) {
-  //     throw new NotFoundException(`No user found for email: ${email}`);
-  //   }
-  //   await this.emailService.sendResetPasswordLink(email)
-  // }
-
-  // async sendResetEmail(email: string, token: string): Promise<void> {
-  //   // Implement email sending logic (using Nodemailer or any email service)
-  //   console.log(`Reset link: http://your-frontend-url/reset-password?token=${token}`);
-  // }
-
-  // async resetPassword(token: string, password: string) {
-  //   const email = await this.emailService.decodeConfirmationToken(token)
-
-  //   const user = dbUsers.find((user => user.email === email));
-
-  //   if(!user) {
-  //     throw new NotFoundException(`No user found for email: ${email}`)
-  //   }
-
-  //   user.password = password;
-  //   delete user.resetToken;
-  // }
 }
 
 
