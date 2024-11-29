@@ -43,16 +43,7 @@ export class UsersService {
     return await this.usersRepository.save(newUser);
   }
 
-  async getById(id: string) {
-    const user = await this.usersRepository.findOne({ where: { id } });
-    if (user) {
-      return user;
-    }
-    throw new HttpException(
-      'User with this id does not exist',
-      HttpStatus.NOT_FOUND,
-    );
-  }
+  
 
   async create(userData: CreateUserDto) {
     const newUser = await this.usersRepository.create(userData);
@@ -63,16 +54,16 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { email },
     });
-
-    const passwordValid = await bycript.compare(password, user.password);
+    
+    const passwordValid = await bycript.compare(password, user.password)
     if (!user) {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
 
-    if (user && passwordValid) {
+    if(user && passwordValid) {
       return user;
     }
-
+    
     return toUserDto(user);
   }
 
@@ -140,5 +131,39 @@ export class UsersService {
 
   async findAll() {
     return this.usersRepository.find();
+  }
+
+  async update(id: string, updateUser: UpdateUsersDto) {
+    const user = await this.usersRepository.preload({
+       id,
+       ...updateUser
+    });
+
+    if(!user) {
+      throw new NotFoundException(`Member ${id} not found`)
+    }
+    return user
+  }
+
+  async getById(id: string) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (user) {
+      return user;
+    }
+    throw new HttpException(
+      'User with this id does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+  }
+
+  async remove(id: string) {
+    const user = await this.usersRepository.findOne({
+      where: { id }
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Product ${id} not found`);
+    }
+    return this.usersRepository.remove(user);
   }
 }
