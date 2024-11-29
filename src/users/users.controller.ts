@@ -6,17 +6,21 @@ import { resetPasswordDto } from 'src/@core/domain/dto/reset-password.dto';
 import { Role } from './roles.decorator';
 import { Roles as UserRoles } from './enum/role.enum';
 import { RolesGuard } from 'src/auth/auth.guard';
+import UserEntity from 'src/@core/domain/entities/users.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Role(UserRoles.Admin)
-  @UseGuards(RolesGuard)
   async getAll() {
     return this.usersService.findAll();
-  } 
+  }
+
+  @Get('/:id')
+  async getById(@Param('id') id: string): Promise<UserEntity> {
+    return await this.usersService.getById(id)
+  }
 
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
@@ -39,6 +43,8 @@ export class UsersController {
   } 
 
   @Delete('/:id')
+  @Role(UserRoles.Admin)
+  @UseGuards(RolesGuard)
   async removeUser(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
