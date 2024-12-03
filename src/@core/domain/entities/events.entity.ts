@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { CategoryEnum } from "../enum/category.enum";
 
 @Entity()
 export class EventsEntity {
@@ -11,8 +12,8 @@ export class EventsEntity {
     @Column({ nullable: true})
     description: string;
 
-    @Column({ nullable: true })
-    category: string;
+    @Column({type: 'enum', enum: CategoryEnum, default: CategoryEnum[0] })
+    category: CategoryEnum[];
 
     @Column()
     initialDate: Date;
