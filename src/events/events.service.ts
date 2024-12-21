@@ -12,9 +12,13 @@ export class EventsService {
     ) {}
 
     async create(events: EventsDto) {
-        const newEvent = this.eventsRepository.create(events)
-        await this.eventsRepository.save(newEvent)
-        return newEvent
+        try {
+            const newEvent = this.eventsRepository.create(events)
+            return await this.eventsRepository.save(newEvent)
+        } catch(error) {
+            console.error(error)
+            throw new Error('Could not create Event')
+        }
 
     }
 
@@ -34,7 +38,7 @@ export class EventsService {
 
     async update(id: string, updateEvents: EventsEntity) {
         const events = await this.eventsRepository.preload({
-            id;
+            id,
             ...updateEvents
         });
         if(!events) {

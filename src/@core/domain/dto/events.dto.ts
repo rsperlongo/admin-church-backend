@@ -1,9 +1,8 @@
-import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 import { CategoryEnum } from "../enum/category.enum";
 
 export class EventsDto {
-    @IsNotEmpty()
-    @IsString()
+    @IsUUID()
     id: string;
 
     @IsNotEmpty()

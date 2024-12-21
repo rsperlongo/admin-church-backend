@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsNumber, IsPhoneNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateMemberDTO {
   @IsNotEmpty()
