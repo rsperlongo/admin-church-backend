@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsNumber, IsPhoneNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateMemberDTO {
   @IsNotEmpty()
@@ -19,8 +19,8 @@ export class CreateMemberDTO {
   uf: string;
 
   @IsNotEmpty()
-  birthday: string
+  birthday: string;
 
   @IsNotEmpty()
-  phone: string
+  phone: string;
 }

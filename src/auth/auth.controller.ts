@@ -1,16 +1,12 @@
 import {
   Controller,
   Post,
-  UseGuards,
-  HttpCode,
   Body,
   Res,
   HttpException,
   HttpStatus,
-  NotFoundException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthGuard } from '@nestjs/passport';
 import { LogInDto } from 'src/@core/domain/dto/Login.dto';
 import { LoginStatus } from './interfaces/login-status.interface';
 import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
@@ -24,8 +20,9 @@ export class AuthController {
   public async register(
     @Body() createUserDto: CreateUserDto,
   ): Promise<RegistrationStatus> {
-    const result: RegistrationStatus =
-      await this.authService.register(createUserDto);
+    const result: RegistrationStatus = await this.authService.register(
+      createUserDto,
+    );
 
     if (!result.success) {
       throw new HttpException(result.message, HttpStatus.BAD_REQUEST);

@@ -1,29 +1,35 @@
-import { IsDate, IsNotEmpty, IsNumber, IsPhoneNumber, IsString } from "class-validator";
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
 
 export class MemberDto {
-    @IsNotEmpty()
-    @IsString()
-    firstname: string;
+  @IsNotEmpty()
+  @IsString()
+  firstname: string;
 
-    @IsNotEmpty()
-    @IsString()
-    lastname: string;
+  @IsNotEmpty()
+  @IsString()
+  lastname: string;
 
-    @IsString()
-    address: string;
+  @IsString()
+  address: string;
 
-    @IsString()
-    city: string;
+  @IsString()
+  city: string;
 
-    @IsString()
-    uf: string;
+  @IsString()
+  uf: string;
 
-    @IsDate()
-    @IsNotEmpty()
-    birthday: Date
+  @IsDate()
+  @IsNotEmpty()
+  birthday: Date;
 
-    @IsNotEmpty()
-    @IsNumber()
-    @IsPhoneNumber()
-    Phone: number
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPhoneNumber()
+  Phone: number;
 }
