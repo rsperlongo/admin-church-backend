@@ -1,5 +1,5 @@
 export enum CategoryEnum {
-    COMUNHAO = 'Comunhao',
-    ADORACAO = 'Adoracao',
-    CELEBRACAO = 'Celebracao'
+  COMUNHAO = 'Comunhao',
+  ADORACAO = 'Adoracao',
+  CELEBRACAO = 'Celebracao',
 }

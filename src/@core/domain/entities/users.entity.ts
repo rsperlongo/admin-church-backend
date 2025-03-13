@@ -19,7 +19,7 @@ export class UserEntity {
   resetTokenExpiry: Date;
 
   @Column({ type: 'enum', enum: Role, default: Role[0] })
-  role: Role[]
+  role: Role[];
 }
 
 export default UserEntity;

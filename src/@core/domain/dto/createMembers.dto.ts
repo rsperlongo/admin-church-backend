@@ -19,8 +19,8 @@ export class CreateMemberDTO {
   uf: string;
 
   @IsNotEmpty()
-  birthday: string
+  birthday: string;
 
   @IsNotEmpty()
-  phone: string
+  phone: string;
 }
