@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUsersDto } from 'src/@core/domain/dto/Update-user.dto';
-import { ForgotPasswordDto } from 'src/@core/domain/dto/forgot-password.dto';
+import { forgotPasswordDto } from 'src/@core/domain/dto/forgot-password.dto';
 import { resetPasswordDto } from 'src/@core/domain/dto/reset-password.dto';
 import { Role } from './roles.decorator';
 import { Roles as UserRoles } from './enum/role.enum';
@@ -32,7 +32,7 @@ export class UsersController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+  async forgotPassword(@Body() forgotPasswordDto: forgotPasswordDto) {
     await this.usersService.forgotPassword(forgotPasswordDto.email);
     return { message: 'Password reset email sent' };
   }
