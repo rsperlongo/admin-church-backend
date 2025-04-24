@@ -11,8 +11,6 @@ import { LoginUserDto } from '../@core/domain/dto/User-login.dto';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/@core/domain/dto/createUser.dto';
 import { Auth, google } from 'googleapis';
-import { Role } from 'src/@core/domain/enum/role.enum';
-// import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +18,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {
     const clientID = this.configService.get('GOOGLE_CLIENT_ID');
     const clientSecret = this.configService.get('GOOGLE_CLIENT_SECRET');
@@ -85,5 +83,3 @@ export class AuthService {
     };
   }
 }
-
-

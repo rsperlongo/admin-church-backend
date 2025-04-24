@@ -43,8 +43,6 @@ export class UsersService {
     return await this.usersRepository.save(newUser);
   }
 
-  
-
   async create(userData: CreateUserDto) {
     const newUser = await this.usersRepository.create(userData);
     return await this.usersRepository.save(newUser);
@@ -54,16 +52,16 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { email },
     });
-    
-    const passwordValid = await bycript.compare(password, user.password)
+
+    const passwordValid = await bycript.compare(password, user.password);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
 
-    if(user && passwordValid) {
+    if (user && passwordValid) {
       return user;
     }
-    
+
     return toUserDto(user);
   }
 
@@ -89,12 +87,12 @@ export class UsersService {
   }
 
   async sendResetEmail(email: string, token: string): Promise<void> {
-    const  transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
       auth: {
         user: 'ricardo.sperlongo@gmail.com',
-        pass: 'Lme363nc@23+'
-      }
-    })
+        pass: 'Lme363nc@23+',
+      },
+    });
     console.log(
       `Reset link: http://your-frontend-url/reset-password?token=${token}`,
     );
@@ -106,7 +104,7 @@ export class UsersService {
       subject: 'Password reset',
       text: `Click the link to reset your password ${resetUrl}`,
       html: `<a href="${resetUrl}">Reset your password</a>`,
-    })
+    });
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
@@ -126,7 +124,6 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
-  
   // USERS CRUD
 
   async findAll() {
@@ -135,14 +132,14 @@ export class UsersService {
 
   async update(id: string, updateUser: UpdateUsersDto) {
     const user = await this.usersRepository.preload({
-       id,
-       ...updateUser
+      id,
+      ...updateUser,
     });
 
-    if(!user) {
-      throw new NotFoundException(`Member ${id} not found`)
+    if (!user) {
+      throw new NotFoundException(`Member ${id} not found`);
     }
-    return user
+    return user;
   }
 
   async getById(id: string) {
@@ -158,7 +155,7 @@ export class UsersService {
 
   async remove(id: string) {
     const user = await this.usersRepository.findOne({
-      where: { id }
+      where: { id },
     });
 
     if (!user) {
