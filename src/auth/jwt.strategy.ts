@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-//import { Strategy } from 'passport-local';
 import { JwtPayload } from './interfaces/payload-interfaces';
 import { UserDto } from 'src/@core/domain/dto/Users.dto';
 import { AuthService } from './auth.service';
