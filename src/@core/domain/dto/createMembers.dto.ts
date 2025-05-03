@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreateMemberDTO {
   @IsNotEmpty()
@@ -16,6 +16,7 @@ export class CreateMemberDTO {
   city: string;
 
   @IsString()
+  @MaxLength(2)
   uf: string;
 
   @IsNotEmpty()
